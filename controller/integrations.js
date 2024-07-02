@@ -1,5 +1,6 @@
 const axios = require('axios');
-const Integration = require('../models/Integration'); 
+const Integration = require('../models/Integration');
+
 exports.createIntegration = async (req, res) => {
     try {
         const { platform, accountId, company, reference, appId, token, appSecret, status } = req.body;
@@ -18,14 +19,14 @@ exports.createIntegration = async (req, res) => {
 
         const integration = new Integration({
             platform,
-            accountId,
-            company,
-            reference,
-            appId,
+            company_id: companyId, 
+            account_id: accountId,
+            app_id: appId,
             token,
-            appSecret,
+            app_secret: appSecret,
             status
         });
+
         const savedIntegration = await integration.save();
 
         res.status(200).json({ success: true, data: savedIntegration });
@@ -35,12 +36,14 @@ exports.createIntegration = async (req, res) => {
     }
 };
 
+const Integration = require('../models/Integration');
 
 exports.getIntegrations = async (req, res) => {
     try {
         const integrations = await Integration.find();
         res.json(integrations);
     } catch (error) {
-        res.status(500).send('Server Error');
+        console.error('Error fetching integrations:', error);
+        res.status(500).json({ success: false, message: 'Server Error' });
     }
-} 
+};
